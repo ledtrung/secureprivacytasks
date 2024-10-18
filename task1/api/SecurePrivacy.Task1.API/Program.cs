@@ -17,6 +17,8 @@ builder.Services.AddSingleton<IMongoCollection<User>>(sp =>
     return mongoDatabase.GetCollection<User>(userStoreOptions.CollectionName);
 });
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddHostedService<UserStoreIndexesHostedService>();
+
 
 var app = builder.Build();
 
