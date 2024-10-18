@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-using System.Security.Cryptography;
 using MongoDB.Driver;
 
 namespace SecurePrivacy.Task1.API.Resources.Users;
