@@ -13,15 +13,17 @@ public class UserStoreIndexesHostedService : IHostedService
         _logger = logger;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Creating a test compound index for Name and Dob");
         var indexModel = new CreateIndexModel<User>(Builders<User>
             .IndexKeys
             .Ascending(u => u.Name)
             .Ascending(u => u.Dob));
+        //We don't wait for this execution so our API endpoints can be served immediately without waiting for the indexing to be finished
+        _userCollection.Indexes.CreateOneAsync(indexModel);
 
-        await _userCollection.Indexes.CreateOneAsync(indexModel);
+        return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
