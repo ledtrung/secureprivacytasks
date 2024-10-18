@@ -36,5 +36,12 @@ public class User
 
 public class UserFilter
 { 
-    public string? Name { get; set; }
+    public string? NameStartWith { get; set; }
+    internal bool HasNameFilter => !string.IsNullOrWhiteSpace(NameStartWith);
+    public DateTime? BornBefore { get; set; }
+    internal bool HasBornBeforeFilter => BornBefore.HasValue;
+    public DateTime? BornAfter { get; set; }
+    internal bool HasBornAfterFilter => BornAfter.HasValue;
+    
+    internal bool HasFilter => HasNameFilter || HasBornBeforeFilter || HasBornAfterFilter;
 }

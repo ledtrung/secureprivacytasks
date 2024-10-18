@@ -19,11 +19,11 @@ public class UsersController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] UserFilter? filter)
     {
         try
         {
-            var users = await _userService.GetUsers();
+            var users = await _userService.GetUsers(filter);
             return Ok(users.Select(e => UserDTO.FromUser(e)).ToList());
         }
         catch (Exception ex)

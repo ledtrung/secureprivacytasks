@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+using System.Security.Cryptography;
 using MongoDB.Driver;
 
 namespace SecurePrivacy.Task1.API.Resources.Users;
@@ -15,9 +17,9 @@ public class UserService
     /// Get all users that satisfy the filter
     /// </summary>
     /// <returns></returns>
-    public async Task<List<User>> GetUsers()
+    public async Task<List<User>> GetUsers(UserFilter? filter)
     {
-        return await _userCollection.Find(_ => true).ToListAsync();
+        return await _userCollection.Find(BuildFilter(filter)).ToListAsync();
     }
 
     /// <summary>
@@ -37,5 +39,32 @@ public class UserService
     public async Task AddUser(User user)
     {
         await _userCollection.InsertOneAsync(user);
+    }
+
+    private FilterDefinition<User> BuildFilter(UserFilter? filter)
+    { 
+        var builder = Builders<User>.Filter;
+        if (filter is null || !filter.HasFilter)
+        {
+            return builder.Empty;
+        }
+
+        List<FilterDefinition<User>> filters = new List<FilterDefinition<User>>();
+        if (filter.HasNameFilter)
+        {
+            filters.Add(builder.Regex(e => e.Name, $"^{filter.NameStartWith}"));
+        }
+
+        if (filter.HasBornBeforeFilter)
+        {
+            filters.Add(builder.Gt(e => e.Dob, filter.BornBefore));
+        }
+
+        if (filter.HasBornAfterFilter)
+        {
+            filters.Add(builder.Lt(e => e.Dob, filter.BornAfter));
+        }
+
+        return builder.And(filters);
     }
 }
