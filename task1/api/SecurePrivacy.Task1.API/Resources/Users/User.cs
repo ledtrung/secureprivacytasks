@@ -23,8 +23,6 @@ public class User
         Dob = dob;
     }
 
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [BsonElement("_id")]
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; private set; }

@@ -1,16 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace SecurePrivacy.Task1.API.Resources.Users;
 
 public class UserService
 {
-    private readonly UsersDbContext _dbContext;
+    private readonly IMongoCollection<User> _userCollection;
 
-    public UserService(UsersDbContext dbContext)
+    public UserService(IMongoCollection<User> userCollection)
     {
-        this._dbContext = dbContext;
+        _userCollection = userCollection;
     }
 
     /// <summary>
@@ -19,7 +17,7 @@ public class UserService
     /// <returns></returns>
     public async Task<List<User>> GetUsers()
     {
-        return await _dbContext.Users.ToListAsync();
+        return await _userCollection.Find(_ => true).ToListAsync();
     }
 
     /// <summary>
@@ -29,16 +27,15 @@ public class UserService
     /// <returns></returns>
     public async Task<User?> GetUser(string id)
     {
-        return await _dbContext.Users.FindAsync(id);
+        return await _userCollection.Find(e => e.Id == id).FirstOrDefaultAsync();
     }
     
     /// <summary>
     /// Insert a new user. Will throw exception if trying to update an existing user here.
     /// </summary>
     /// <param name="user">User information</param>
-    public async Task<User> AddUser(User user)
+    public async Task AddUser(User user)
     {
-        var val = await _dbContext.Users.AddAsync(user);
-        return val.Entity;
+        await _userCollection.InsertOneAsync(user);
     }
 }

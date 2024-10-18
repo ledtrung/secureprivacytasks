@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using SecurePrivacy.Task1.API.Resources.Users;
@@ -10,15 +9,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<UserStoreOptions>(builder.Configuration.GetSection(UserStoreOptions.ConfigLocation));
-builder.Services.AddSingleton(sp =>
+builder.Services.AddSingleton<IMongoCollection<User>>(sp =>
 {
-    var userStoreOptionsMonitor = sp.GetRequiredService<IOptionsMonitor<UserStoreOptions>>();
-    var mongoClient = new MongoClient(userStoreOptionsMonitor.CurrentValue.ConnectionString);
-    var dbContextOptions 
-        = new DbContextOptionsBuilder<UsersDbContext>()
-            .UseMongoDB(mongoClient, userStoreOptionsMonitor.CurrentValue.DatabaseName);
-
-    return new UsersDbContext(dbContextOptions.Options, userStoreOptionsMonitor);
+    var userStoreOptions = sp.GetRequiredService<IOptionsMonitor<UserStoreOptions>>().CurrentValue;
+    var mongoClient = new MongoClient(userStoreOptions.ConnectionString);
+    var mongoDatabase = mongoClient.GetDatabase(userStoreOptions.DatabaseName);
+    return mongoDatabase.GetCollection<User>(userStoreOptions.CollectionName);
 });
 builder.Services.AddSingleton<UserService>();
 
