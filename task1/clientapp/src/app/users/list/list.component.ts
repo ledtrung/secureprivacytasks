@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from '../../../user'
-import { UserService } from '../../../user.service'
+import { User } from '../user'
+import { UserService } from '../user.service'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
@@ -21,8 +21,8 @@ export class UserListComponent implements OnInit {
     constructor(private userService: UserService) {}
 
     refreshUsers() { 
-        this.userService.getUsers().subscribe((response: User[]) => { 
-            this.users = response;
+        this.userService.getUsers().subscribe((users: User[]) => { 
+            this.users = users;
         });
     }
 }

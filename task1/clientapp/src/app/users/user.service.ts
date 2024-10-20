@@ -3,7 +3,9 @@ import {User} from './user'
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+    providedIn: 'root'
+})
 export class UserService {
     baseUrl: string = "http://localhost:5048/";
 
@@ -16,7 +18,7 @@ export class UserService {
     }
 
     public addUser(user: User): Observable<any> { 
-        const headers = { 'content-type': 'application/json'}  
+        const headers = { 'content-type': 'application/json' }  
         const body = JSON.stringify(user);
         return this.http.post(this.baseUrl + 'users', body, { 'headers': headers });
     }
