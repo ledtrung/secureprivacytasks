@@ -16,9 +16,22 @@ builder.Services.AddSingleton<IMongoCollection<User>>(sp =>
     var mongoDatabase = mongoClient.GetDatabase(userStoreOptions.DatabaseName);
     return mongoDatabase.GetCollection<User>(userStoreOptions.CollectionName);
 });
+
+builder.Services.Configure<EncryptionOptions>(builder.Configuration.GetSection(EncryptionOptions.ConfigLocation));
+
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<CryptographyService>();
 builder.Services.AddHostedService<UserStoreIndexesHostedService>();
 
+builder.Services.AddCors(options =>
+    {
+        //This should be configurable
+        options.AddDefaultPolicy(builder => {
+            builder.WithOrigins("http://localhost:4200");
+            builder.WithMethods("GET", "POST");
+            builder.AllowAnyHeader();
+        });
+    });
 
 var app = builder.Build();
 
@@ -29,8 +42,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
+app.UseRouting();
+
 app.UseHttpsRedirection();
 
+app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();

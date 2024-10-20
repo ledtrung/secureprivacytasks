@@ -5,17 +5,19 @@ namespace SecurePrivacy.Task1.API.Resources.Users;
 
 public class User
 {
-    public User(string? id, string name, string address, DateTime dob)
+    public User(string? id, string name, string email, string address, DateTime dob)
     {
         Id = id;
         Name = name;
+        Email = email;
         Address = address;
         Dob = dob;
     }
 
-    public User(string name, string address, DateTime dob)
+    public User(string name, string email, string address, DateTime dob)
     {
         Name = name;
+        Email = email;
         Address = address;
         Dob = dob;
     }
@@ -25,6 +27,8 @@ public class User
     public string? Id { get; private set; }
     [BsonElement("name")]
     public string Name { get; private set; }
+    [BsonElement("email")]
+    public string Email { get; private set; }
     [BsonElement("address")]
     public string Address { get; private set; }
     [BsonElement("dob")]

@@ -9,11 +9,13 @@ public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;
     private readonly UserService _userService;
+    private readonly CryptographyService _cryptoService;
 
-    public UsersController(ILogger<UsersController> logger, UserService userService)
+    public UsersController(ILogger<UsersController> logger, UserService userService, CryptographyService cryptoService)
     {
         _logger = logger;
         _userService = userService;
+        _cryptoService = cryptoService;
     }
 
     [HttpGet]
@@ -24,7 +26,7 @@ public class UsersController : ControllerBase
         try
         {
             var users = await _userService.GetUsers(filter);
-            return Ok(users.Select(e => UserDTO.FromUser(e)).ToList());
+            return Ok(users.Select(e => UserDTO.FromUser(e, _cryptoService)).ToList());
         }
         catch (Exception ex)
         {
@@ -46,7 +48,7 @@ public class UsersController : ControllerBase
             if (user is null)
                 return NotFound();
                 
-            return Ok(UserDTO.FromUser(user));
+            return Ok(UserDTO.FromUser(user, _cryptoService));
         
         }
         catch (InvalidOperationException ex)
@@ -75,7 +77,7 @@ public class UsersController : ControllerBase
     {
         try
         {
-            await _userService.AddUser(user.ToUser());
+            await _userService.AddUser(user.ToUser(_cryptoService));
             
             return Created();
         }
